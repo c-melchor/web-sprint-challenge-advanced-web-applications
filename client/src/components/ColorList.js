@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { axiosWithAuth } from "../utils/axiosWithAuth";
 
 const initialColor = {
   color: "",
-  code: { hex: "" }
+  code: { hex: "" },
+  id: ""
 };
 
 const ColorList = ({ colors, updateColors }) => {
@@ -14,10 +15,20 @@ const ColorList = ({ colors, updateColors }) => {
   const editColor = color => {
     setEditing(true);
     setColorToEdit(color);
+    console.log(colorToEdit, "COLOR TO EDIT HERE");
   };
 
   const saveEdit = e => {
     e.preventDefault();
+    axiosWithAuth()
+      .put(`/api/colors/${colorToEdit.id}`, colorToEdit)
+      .then(res => {
+        const newColors = [...colors];
+        updateColors(newColors, (newColors[colorToEdit.id - 1] = res.data));
+      })
+      .catch(err => {
+        console.log(err);
+      });
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
@@ -34,12 +45,14 @@ const ColorList = ({ colors, updateColors }) => {
         {colors.map(color => (
           <li key={color.color} onClick={() => editColor(color)}>
             <span>
-              <span className="delete" onClick={e => {
-                    e.stopPropagation();
-                    deleteColor(color)
-                  }
-                }>
-                  x
+              <span
+                className="delete"
+                onClick={e => {
+                  e.stopPropagation();
+                  deleteColor(color);
+                }}
+              >
+                x
               </span>{" "}
               {color.color}
             </span>
@@ -75,7 +88,9 @@ const ColorList = ({ colors, updateColors }) => {
             />
           </label>
           <div className="button-row">
-            <button type="submit">save</button>
+            <button type="submit" onSubmit={saveEdit}>
+              save
+            </button>
             <button onClick={() => setEditing(false)}>cancel</button>
           </div>
         </form>
