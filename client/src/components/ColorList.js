@@ -36,6 +36,14 @@ const ColorList = ({ colors, updateColors }) => {
 
   const deleteColor = color => {
     // make a delete request to delete this color
+    axiosWithAuth()
+      .delete(`/api/colors/${color.id}`, color)
+      .then(res => {
+        console.log(res, "RES.DATA!!!!");
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   return (
@@ -50,6 +58,7 @@ const ColorList = ({ colors, updateColors }) => {
                 onClick={e => {
                   e.stopPropagation();
                   deleteColor(color);
+                  console.log(color, "COLOR ON CLICK");
                 }}
               >
                 x
