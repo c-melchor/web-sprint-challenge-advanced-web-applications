@@ -13,14 +13,17 @@ const Login = () => {
   const history = useHistory();
 
   const onChange = e => {
-    setFormValues({ ...formValues, [e.target.name]: e.target.value });
-    console.log(formValues);
+    setFormValues({
+      ...formValues,
+
+      [e.target.name]: e.target.value
+    });
   };
 
   const onLogin = e => {
     e.preventDefault();
-    axiosWithAuth
-      .post("/login", formValues)
+    axiosWithAuth()
+      .post("/api/login", formValues)
       .then(res => {
         localStorage.setItem("token", res.data.payload);
         history.push("/protected");
@@ -35,7 +38,7 @@ const Login = () => {
       <h1>Welcome to the Bubble App!</h1>
       <br />
 
-      <form>
+      <form onSubmit={onLogin}>
         <label htmlFor="username">
           Username:
           <input
@@ -50,7 +53,7 @@ const Login = () => {
         <label htmlFor="password">
           Password:
           <input
-            type="password"
+            type="text"
             onChange={onChange}
             value={formValues.password}
             placeholder="password"
@@ -58,9 +61,7 @@ const Login = () => {
             name="password"
           />
         </label>
-        <button type="submit" onSubmit={onLogin}>
-          Login
-        </button>
+        <button type="submit">Login</button>
       </form>
     </>
   );
