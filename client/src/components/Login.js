@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { useHistory } from "react-router-dom";
+import { axiosWithAuth } from "../utils/axiosWithAuth";
 
 const Login = () => {
   // make a post request to retrieve a token from the api
@@ -9,6 +10,8 @@ const Login = () => {
     password: ""
   });
 
+  const history = useHistory();
+
   const onChange = e => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
     console.log(formValues);
@@ -16,10 +19,11 @@ const Login = () => {
 
   const onLogin = e => {
     e.preventDefault();
-    axios
-      .post("http://localhost:3000/api/login", formValues)
+    axiosWithAuth
+      .post("/login", formValues)
       .then(res => {
-        console.log(res);
+        localStorage.setItem("token", res.data.payload);
+        history.push("/protected");
       })
       .catch(err => {
         console.log(err);
